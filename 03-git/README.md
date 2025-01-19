@@ -20,22 +20,21 @@ Also known as "source control"
 -   Each change labelled with commit message
 -   Git is the most used version control system
 
-## Basic Concepts of Git - 1
+## Basic Concepts of Git
 
-**Remote Git Repository**: Where the code is hosted (e.g., GitLab or GitHub)  
-**Local Git Repository**: Local copy of the code on your machine  
-**Git Client**: To connect and execute git commands (can be UI or Command Line Tool)
+| Component         | Description                              |
+| ----------------- | ---------------------------------------- |
+| Remote Repository | Hosted on platforms like GitHub/GitLab   |
+| Local Repository  | Developer's machine copy                 |
+| Git Client        | CLI or GUI interface to execute commands |
 
 -   Code is fetched ("pulled") from remote repo and "pushed" to it
-
-## Basic Concepts of Git - 2
-
 -   Most of the time, Git knows how to merge changes automatically
 -   "Merge Conflict" occurs when same line was changed (requires manual resolution)
 -   Best Practice: Push and Pull often from remote repository to stay in sync
 -   Note: Breaking changes don't affect you until you pull the new code
 
-## Working with Git - 1
+## Working with Git
 
 `git add <file>`:
 
@@ -47,14 +46,12 @@ Also known as "source control"
 -   Saves your changes in your local repository
 -   Creates a new commit you can return to later
 
-## Working with Git - 2
-
 `git push <remote> <branch-name>`:
 
 -   After committing, sends changes to remote Git server
 -   Uploads your commits to the remote repo
 
-## Setup Git Repository - 1
+## Setup Git Repository
 
 ### 1) Remote Repository
 
@@ -65,8 +62,6 @@ Different Git Repositories to register:
 -   Can be private (companies) or public (open source)
 -   Many operations possible via platform UI
 
-## Setup Git Repository - 2
-
 ### 2) Local Repository
 
 Requirements:
@@ -75,25 +70,17 @@ Requirements:
 -   [Installation Guide](https://git-scm.com/downloads)
 -   [GUI Clients](https://git-scm.com/downloads/guis)
 
-## Setup Git Repository - 3
-
-### 2) Local Repository (continued)
-
 Authentication:
 
 -   Your public SSH Key must be added to remote platforms
 -   Getting started guide available
-
-## Setup Git Repository - 4
-
-### 2) Local Repository (alternative)
 
 For existing local projects:
 
 -   Initialize git repository with `git init`
 -   Then push to GitLab/GitHub/etc.
 
-## Concept of Branches - 1
+## Concept of Branches
 
 Purpose:
 
@@ -108,8 +95,6 @@ Common branch names:
 
 **Best Practice**: 1 branch per bugfix or feature
 
-## Concept of Branches - 2
-
 Branch workflow:
 
 -   Branch starts from main branch codebase
@@ -123,7 +108,7 @@ Branch workflow:
 -   Request to merge one branch into another (usually main)
 -   Reviewer can see changes and approve/decline
 
-## Why to know Git as DevOps Engineer? - 1
+## Why to know Git as DevOps Engineer?
 
 ### Use Case 1) Infrastructure as Code
 
@@ -136,8 +121,6 @@ Branch workflow:
 -   Version control for Python/other automation scripts
 -   Store in Git repository
 
-## Why to know Git as DevOps Engineer? - 2
-
 ### Use Case 3) CI/CD Pipeline and Build Automation
 
 -   CI requires checking out code from repository
@@ -146,7 +129,7 @@ Branch workflow:
     -   Getting commit hashes
     -   Checking change locations (frontend/backend)
 
-## Best Practices - 1
+## Best Practices
 
 ### Commit-related:
 
@@ -160,8 +143,6 @@ Branch workflow:
 -   Keep branches up-to-date with remote
 -   Pull often from remote repository
 -   Merge main into feature branches regularly
-
-## Best Practices - 2
 
 ### General:
 
