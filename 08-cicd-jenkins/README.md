@@ -11,7 +11,8 @@ Build automation is the process of automating:
 -   Compilation into binary code/building Docker images
 -   Pushing artifacts to repositories
 -   Deployment of artifacts
-    **Core Concept**: Build automation and CI/CD are at the heart of DevOps
+
+**Core Concept**: Build automation and CI/CD are at the heart of DevOps
 
 ### Part 2
 
