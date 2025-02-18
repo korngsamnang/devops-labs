@@ -94,7 +94,7 @@ Currently one of the most used CI/CD tools. Alternatives exist but Jenkins domin
     - Requires Docker installed
 
     ```bash
-    docker run -d -p 8080:8080 jenkins/jenkins:lts
+    docker run -p 8080:8080 -p 50000:50000 -d -v jenkins_home:/var/jenkins_home jenkins/jenkins:lts
     ```
 
 2. **Direct OS installation** :
