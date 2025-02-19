@@ -97,6 +97,13 @@ Currently one of the most used CI/CD tools. Alternatives exist but Jenkins domin
     docker run -p 8080:8080 -p 50000:50000 -d -v jenkins_home:/var/jenkins_home jenkins/jenkins:lts
     ```
 
+    - Access Jenkins at `http://localhost:8080`
+    - Initial setup requires unlocking Jenkins with a generated password found in the container logs:
+
+    ```bash
+    docker logs <container_id>
+    ```
+
 2. **Direct OS installation** :
 
     - More control
