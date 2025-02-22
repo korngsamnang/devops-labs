@@ -47,7 +47,7 @@
 ## Docker vs Alternatives
 
 -   Most popular container technology
--   Alternatives exist but less common
+-   Alternatives exist but less common (e.g., Podman, rkt)
 
 ## Docker Image vs Docker Container
 
