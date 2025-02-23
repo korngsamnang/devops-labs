@@ -175,7 +175,33 @@ docker build -t my-flask-app .
 **Example**:
 
 ```bash
-docker pull 523450290.dkr.ecr.eu-central-1.amazonaws.com/my-app:1.0
+# Variables (customize these)
+AWS_ACCOUNT_ID="123456789012"
+AWS_REGION="us-east-1"
+ECR_REPO="my-app"
+CONTAINER_PORT="3000"
+HOST_PORT="80"
+
+# 1. Build image
+docker build -t ${ECR_REPO} .
+
+# 2. Tag for ECR
+docker tag ${ECR_REPO}:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:latest
+
+# 3. Login to ECR
+aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+
+# 4. Push to ECR
+docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:latest
+
+# 5. Pull & Run on Server
+docker pull ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:latest
+docker run -d -p ${HOST_PORT}:${CONTAINER_PORT} --name ${ECR_REPO}-container ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:latest
+
+# 6. Verify
+docker ps  # Check running containers
+docker logs ${ECR_REPO}-container  # View logs
+
 ```
 
 ## Docker Volumes
