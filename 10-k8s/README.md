@@ -216,39 +216,117 @@ kubeadm join <API_SERVER_IP>:<PORT> --token <TOKEN> --discovery-token-ca-cert-ha
 
 ## Minikube – Local Cluster Setup
 
--   **Minikube** simulates a full Kubernetes cluster on a single machine.
--   Used for **local testing and development**.
--   Control plane and worker components run in one VM or container.
--   Requires a container runtime (e.g., Docker) or VM manager (e.g., VirtualBox).
--   Starts with:
-    ```bash
-    minikube start
-    ```
+-   Minikube implements a local K8s cluster
+-   Usefull for local K8s application development, because running a test cluster would be complex and expensive
+-   Control Plane and Worker processes run on **ONE machine** (VM or container)
+-   So you need a container runtime or virtual machine manager on you laptop
 
 ## kubectl – Kubernetes CLI
 
--   `kubectl` is the official CLI for interacting with Kubernetes.
--   Uses a **kubeconfig** file (usually at `~/.kube/config`) to access clusters.
+-   CLI Tool is interact with your K8s cluster
+-   In order for kubectl to access a K8s cluster, it needs a **kubeconfig** file, which is created automatically when deploying your minikube cluster
+-   By default, config file is located at `~/.kube/config`
 
 **Basic Commands**
 
 ```bash
-kubectl get pods       # Check pod status
-kubectl create -f file.yaml  # Create resources
-kubectl logs <pod>     # Debugging
-kubectl describe       # Detailed info
+# Get status of different K8s components
+kubectl get {k8s-component}
+kubectl get nodes
+kubectl get pods
+kubectl get services
+kubectl get deployments
+
+# CRUD Operations
+kubectl create {k8s-component} {name} {options}
+kubectl create deployment my-nginx-depl --image=nginx
+
+kubectl edit {k8s-component} {name}
+kubectl delete {k8s-component} {name}
+
+# Debugging
+kubectl logs {pod-name}
+kubectl describe {pod-name}
+
+kubectl exec -it {pod-name} -- bash
+kubectl apply -f config-file.yaml
 ```
 
-## Kubernetes YAML Configuration Files
+## K8s YAML Configuration File
 
--   Declarative files used to define the desired state of resources.
--   Written in YAML.
--   Should be version-controlled.
--   Commonly used for:
-    -   Deployments
-    -   Services
-    -   ConfigMaps
-    -   Secrets
+-   Also called **Kubernetes manifest**
+-   Declarative: A manifest **specifies the desired state** of a K8s component
+-   Config files are in YAML format, which is user-firendly, but **strict indentation**!
+-   Config files should be stored in version control (e.g., Git) for tracking changes and collaboration
+
+### Each configuration file has **3 parts**:
+
+1. `metadata`
+
+    - Contains information about the resource, such as name, namespace, and labels.
+
+2. `specification`
+
+    - Defines the desired state of the resource, including configuration details like replicas, container images, ports, etc.
+
+3. `status` (optional)
+    - Automatically generated and added by Kubernetes.
+    - K8s gets this information from etcd, which holds the current status of any K8s component.
+
+### Deployment Configuration File
+
+-   Deployment Configuration is a bit special.
+-   Since it's an abstraction over Pods, it has a `template` field in the `spec` section.
+-   Own `metadata` and `spec` sections, which define the Pod template that will be used to create Pods.
+-   Blueprint for Pods, which allows you to define how the Pods should look like.
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: my-deployment
+spec:
+    replicas: 3
+    selector:
+        matchLabels:
+            app: my-app
+    template:
+        metadata:
+            labels:
+                app: my-app
+        spec:
+            containers:
+                - name: my-container
+                  image: my-image:latest
+                  ports:
+                      - containerPort: 80
+```
+
+### Labels & Selectors
+
+** Labels**
+
+-   Labels are key/value pairs attached to resources, such as Pods.
+-   Used to specify indentifying attributes that are meaningful and relevant to users.
+
+**Selectors**
+
+-   Labels do not provide uniqueness, so selectors are used to match labels and group resources.
+-   Via selectors the user can identify a set of resources that match certain criteria.
+
+**Example:**
+
+```yaml
+metadata:
+    labels:
+        app: frontend
+```
+
+```yaml
+selector:
+    matchLabels:
+        app: frontend
+```
 
 ### Sections of a YAML File
 
@@ -330,156 +408,129 @@ selector:
         app: frontend
 ```
 
-### Services and Ports
+### Ports in Service and Pod
 
--   A Service exposes Pods and provides a stable endpoint.
+-   In service component you need to specify:
+    -   `port`: The port that the service will expose.
+    -   `targetPort`: The port on the Pod that the service will forward traffic to.
+-   In Deployment component:
+    -   `containerPort`: The port that the container will listen on.
 
-**Example: ClusterIP Service**
+### Browser Request Flow through the K8s components
 
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-    name: frontend-service
-spec:
-    selector:
-        app: frontend
-    ports:
-        - port: 80
-          targetPort: 8080
-    type: ClusterIP
-```
+**Example Setup:**
 
-### Ingress – HTTP Routing
+-   Mongo Express as UI
+-   MongoDB as database
+-   User updates entries in database via browser
+-   ConfigMap and Secret holds the MongoDB's endpoint (Service name of MongoDB) and credentials (user, pwd), which gets injected to MongoExpress Pod, so MongoExpress can connect to the DB
 
-Ingress allows external access to services via HTTP(S).
-**Example: Basic Ingress**
+**K8s Components needed In this setup:**
 
-```yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-    name: web-ingress
-spec:
-    rules:
-        - host: example.com
-          http:
-              paths:
-                  - path: /
-                    pathType: Prefix
-                    backend:
-                        service:
-                            name: frontend-service
-                            port:
-                                number: 80
-```
-
-> 🔗 **Note**: Ingress requires an Ingress Controller (e.g., NGINX, Traefik) to function.
-
-### ConfigMap & Secret
-
--   **ConfigMap**: Stores non-sensitive configuration data.
--   **Secret**: Stores sensitive data (e.g., passwords, API keys).
-
-**Example: ConfigMap**
-
-```yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-    name: app-config
-data:
-    DB_HOST: mongodb-service
-    DB_PORT: "27017"
-```
-
-**Example: Secret Example**
-
-```yaml
-apiVersion: v1
-kind: Secret
-metadata:
-    name: db-credentials
-type: Opaque
-data:
-    username: YWRtaW4= # base64 encoded
-    password: c2VjcmV0 # base64 encoded
-```
+-   2 Deplooyment / Pod
+-   2 Services
+-   1 ConfigMap
+-   1 Secret
 
 ### Namespaces
 
--   Logical separation within a single cluster.
--   Useful for team isolation, environment isolation, or RBAC.
+-   Namespaces provide a mechanism for isolating groups of resources within a single cluster.
+-   Names of resources need to be unique within a namespace, but not across namespaces.
+-   Like a virtual cluster inside a cluster.
 
-**Create via CLI**
+**Default Namespace:**
+
+-   If no namespace is specified, resources are created in the `default` namespace. (DON'T modify kube-system namespace!)
+
+**Creating a Namespace:**
+
+-   Via `kubectl` command:
 
 ```bash
-kubectl create namespace dev-team
+kubectl create namespace my-namespace
 ```
 
-**Create via YAML**
+-   Or by defining a YAML file:
 
 ```yaml
 apiVersion: v1
 kind: Namespace
 metadata:
-    name: dev-team
+    name: my-namespace
+    nampespace: my-namespace
 ```
 
-### Persistent Storage
+**Use Cases** for when to use namespaces:
 
--   Kubernetes supports Persistent Volumes for storing data beyond Pod lifecycles.
+1. Group resources logically (e.g., dev, staging, prod). Instead of having all in the default namespace.
+2. Insolate team resources (e.g., team A, team B). To avoid conflicts between teams.
+3. Share resources between different environments (e.g., dev, staging, prod) while keeping them isolated.
+4. Limit permissions and compute resources for teams.
 
-**Example: PersistentVolumeClaim (PVC)**
+# Deep Dive into Kubernetes Services
 
-```yaml
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-    name: app-pvc
-spec:
-    accessModes:
-        - ReadWriteOnce
-    resources:
-        requests:
-            storage: 1Gi
-```
+-   Abstract way to expose an application running on a set of Pods
 
-### StatefulSets
+**Why Services?**
 
--   Used for apps where each instance (Pod) has its own state and storage (e.g., databases).
-    **Example: StatefulSet with PVC**
+-   Stable IP address
+-   Loadbalancing
+-   Loose coupling between Pods and clients
+-   Within & Outside Cluster
 
-```yaml
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-    name: mongo-db
-spec:
-    serviceName: mongo
-    replicas: 2
-    selector:
-        matchLabels:
-            app: mongo
-    template:
-        metadata:
-            labels:
-                app: mongo
-        spec:
-            containers:
-                - name: mongo
-                  image: mongo
-                  ports:
-                      - containerPort: 27017
-                  volumeMounts:
-                      - name: mongo-storage
-                        mountPath: /data/db
-    volumeClaimTemplates:
-        - metadata:
-              name: mongo-storage
-          spec:
-              accessModes: ["ReadWriteOnce"]
-              resources:
-                  requests:
-                      storage: 1Gi
-```
+## Service Types
+
+| Service Type | Description                                                                                    |
+| ------------ | ---------------------------------------------------------------------------------------------- |
+| ClusterIP    | Default type, exposes service on a cluster-internal IP. Only accessible within the cluster.    |
+| NodePort     | Exposes service on each Node’s IP at a static port. Accessible from outside the cluster.       |
+| LoadBalancer | Creates an external load balancer in supported cloud providers. Routes traffic to the service. |
+
+### ClusterIP Service & its subtypes
+
+-   ClusterIP is an internal service, not accessible from outside the cluster
+-   All Pods in the cluster can talk to this internal service
+
+There are 2 subtypes of ClusterIP service:
+
+1. **Headless Service**:
+
+    - When client needs to communicate with 1 specific Pod directly, instead of randomly selected
+    - Use case: When Pod replicas are not identical. For example statefull apps, like when only master is allowed to write to database, but all replicas can read from it.
+
+2. **Multi-port Service**:
+    - When a single service needs to expose multiple ports
+    - Use case: When a Pod runs multiple containers, each listening on different ports
+
+### NodePort Service
+
+-   Unlike internal Service, is accessible from outside the cluster
+-   Exposes the service on each Node’s IP at a static port
+-   Traffic sent to any Node’s IP on that port is forwarded to the service
+-   Useful for development and testing, but not recommended for production
+
+> ⚠️ **NOT SECURE**: External traffic has access to fixed port on each Worker Node
+
+### LoadBalancer Service
+
+-   Exposes the Service externally using a cloud provider's load balancer
+-   NodePort and ClusterIP Services, to which the external load balancer routes, are created automatically
+-   Automatically provisions an external IP address
+-   Ideal for production environments where you need a stable external endpoint
+
+> ⚠️ **CLOUD PROVIDER DEPENDENT**: Only works with cloud providers that support external load balancers (e.g., AWS, GCP, Azure)
+
+**Important Note**: LoadBalancer Service is not available in Minikube, as it runs locally. Use NodePort for local testing.
+
+## Ingress
+
+-   External Services are the a way to access application in K8s from outside the cluster
+-   In production a better alternative is **Ingress**
+-   Not a Service type, but acts as the entry point for your cluster
+-   **More intelligent and flexible**: Let's you consolidate your routing into a single resource as it can expose multiple services under the same IP address
+
+**Before Ingress Controller you still need 1 load labalancer**
+
+-   **Option 1 - Cloud service provider**: have out-of-the-box K8s solutions
+
+-   **Option 2 - Bare Metal**: You need to configure some kind of entry point. Either inside the cluster or outside as separate server (e.g. NGINX, Traefik)
