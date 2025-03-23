@@ -534,3 +534,30 @@ There are 2 subtypes of ClusterIP service:
 -   **Option 1 - Cloud service provider**: have out-of-the-box K8s solutions
 
 -   **Option 2 - Bare Metal**: You need to configure some kind of entry point. Either inside the cluster or outside as separate server (e.g. NGINX, Traefik)
+
+# Deep Dive into Kubernetes Volumes
+
+-   K8s offers no persistent storage by default
+-   At its core, a _volume is a directory_ (which some data in it), _which is accessible to containers in a Pod_
+-   K8s supports many types of volumes
+-   Ephemeral volume type have a lifetime of a Pod, persistent volumes exist beyond the lifetime of a Pod
+-   In this lecture we talk about _persistent volumes_, with these storage requirements:
+
+    -   Storage the doesn't depend on pod lifecycle
+    -   Storage must be available on all Nodes
+    -   Storage needs to survive even if _cluster crashes_
+
+-   The way to persist data in K8s using Volumes is with these 3 resources:
+
+1. **PersistentVolume (PV)**:
+
+-   **Storage** in the cluster that has been provisioned by an administrator or dynamically provisioned using Storage Classes.
+
+2. **StorageClass**:
+
+-   SC provisions PV dynamically when PVC claims it.
+
+3. **PersistentVolumeClaim (PVC)**:
+
+-   A **request for storage by a user**.
+-   Similar to Pods. While Pods consume node resources, PVCs consume PV resources.
