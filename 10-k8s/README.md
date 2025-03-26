@@ -553,11 +553,11 @@ There are 2 subtypes of ClusterIP service:
 
 -   **Storage** in the cluster that has been provisioned by an administrator or dynamically provisioned using Storage Classes.
 
-2. **StorageClass**:
-
--   SC provisions PV dynamically when PVC claims it.
-
-3. **PersistentVolumeClaim (PVC)**:
+2 . **PersistentVolumeClaim (PVC)**:
 
 -   A **request for storage by a user**.
 -   Similar to Pods. While Pods consume node resources, PVCs consume PV resources.
+
+3. **StorageClass**:
+
+-   SC provisions PV dynamically when PVC claims it.
