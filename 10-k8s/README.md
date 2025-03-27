@@ -561,3 +561,48 @@ There are 2 subtypes of ClusterIP service:
 3. **StorageClass**:
 
 -   SC provisions PV dynamically when PVC claims it.
+
+# Deep Dive into StatefulSets
+
+-   Used to manage stateful applications, like databases
+-   Manages the deployment and scaling of a set of Pods and provides guarantees about the ordering and uniqueness of these Pods
+
+---
+
+## Stateless vs Stateful Applications
+
+| Aspect            | Stateless Applications          | Stateful Applications                      |
+| ----------------- | ------------------------------- | ------------------------------------------ |
+| Data Dependency   | Doesn't depend on previous data | Updates and queries based on previous data |
+| Deployment Method | Deployed using **Deployment**   | Deployed using **StatefulSet**             |
+| State Awareness   | No state awareness              | Depends on up-to-date data/state           |
+
+> Both manage Pods based on container specification
+
+---
+
+## Deployment vs StatefulSet
+
+-   **StatefulSet**
+
+    -   Maintains a sticky identity for each Pod
+    -   Pods are created from the same spec but **not interchangeable**
+    -   Each has a persistent identifier maintained across rescheduling
+    -   Pods:
+        -   More difficult to manage
+        -   Can't be created/deleted at the same time
+        -   Can't be randomly addressed
+
+-   **Deployment**
+    -   Pods are **identical and interchangeable**
+    -   Created in random order with random hashes
+    -   One service can load balance to `$(statefulset name)-$(ordinal)` Pod
+
+---
+
+## Scaling Database Applications
+
+-   Each replica has its own storage
+-   These storages are constantly synchronized
+-   Only one replica can make changes
+-   So replicas are **not identical**
