@@ -606,3 +606,40 @@ There are 2 subtypes of ClusterIP service:
 -   These storages are constantly synchronized
 -   Only one replica can make changes
 -   So replicas are **not identical**
+
+# Managed K8s Servics
+
+## Kubernetes on Cloud platform
+
+-   2 options to create a Kubernetes cluster on a cloud platform:
+    -   Managed Kubernetes Service
+    -   Self-managed Kubernetes cluster
+
+### Create own cluster from scratch
+
+-   You need to manage everything yourself, including:
+    -   Control Plane
+    -   Worker Nodes
+    -   Networking
+    -   Storage
+    -   Security
+-   Not pracical, when you want to setup things fast and easy
+
+### Use Managed K8s Service
+
+-   You only care about Worker Nodes, which you can scale up and down
+-   Everything pre-installed and configured for you
+-   Control Plane Nodes created and managed by the cloud provider
+-   You only pay for the Worker Nodes
+-   Use cloud native load balancer for ingress controller
+-   Use cloud storage
+-   Less effort and time
+
+## Managed Kubernetes Services
+
+-   **AWS**: Amazon EKS (Elastic Kubernetes Service)
+-   **Azure**: Azure Kubernetes Service (AKS)
+-   **Google Cloud**: Google Kubernetes Engine (GKE)
+-   **IBM Cloud**: IBM Cloud Kubernetes Service
+-   **DigitalOcean**: DigitalOcean Kubernetes
+-   **Alibaba Cloud**: Alibaba Cloud Container Service for Kubernetes (ACK)
