@@ -643,3 +643,76 @@ There are 2 subtypes of ClusterIP service:
 -   **IBM Cloud**: IBM Cloud Kubernetes Service
 -   **DigitalOcean**: DigitalOcean Kubernetes
 -   **Alibaba Cloud**: Alibaba Cloud Container Service for Kubernetes (ACK)
+
+# Helm Package Manager
+
+-   Helm is the package manager for Kubernetes. Think of it like `apt` or `yum` for Kubernetes.
+-   Packages YAML files and distributes them in public and private repositories.
+-   Helm packages are called **Charts**.
+
+| Term           | Description                                                                |
+| -------------- | -------------------------------------------------------------------------- |
+| **Helm**       | Tool that installs and manages Kubernetes (K8s) applications using Charts. |
+| **Chart**      | A Helm package containing:                                                 |
+|                | - `Chart.yaml`: Describes the package.                                     |
+|                | - One or more templates: Contain K8s manifest files.                       |
+| **Helm Chart** | You can:                                                                   |
+|                | - Create your own Helm Charts.                                             |
+|                | - Push them to a Helm Repository.                                          |
+|                | - Download and use existing ones.                                          |
+
+## Why Use Helm Charts?
+
+-   Helm simplifies Kubernetes application deployment by bundling all necessary manifest files into a single package called a **Chart**.
+-   Instead of everyone writing their own Kubernetes YAML files, Helm provides reusable, version-controlled Charts.
+-   You can use **existing official Charts** created by trusted sources:
+    -   Example: MySQL Chart from MySQL, ElasticSearch Chart from ElasticSearch.
+
+## Sharing and Discovering Charts
+
+-   Helm Charts are stored in repositories.
+-   These can be:
+    -   **Public repositories** (e.g., Helm Hub)
+    -   **Private repositories** within your organization (e.g., Nexus)
+-   You can search for Charts using:
+    -   `helm search <keyword>`
+    -   The [Helm Hub](https://artifacthub.io)
+
+---
+
+## Helm as a Templating Engine
+
+## How Helm Works with Templates
+
+-   Helm **renders templates** using provided values and communicates with the **Kubernetes API** to deploy resources.
+
+### Typical Helm Chart Structure
+
+```
+mychart/
+├── Chart.yaml # Metadata about the chart
+├── values.yaml # Default configuration values
+├── charts/ # Dependency charts
+└── templates/ # Templated Kubernetes manifests
+```
+
+### What’s Inside a Chart?
+
+1. **Chart.yaml** – Contains the chart’s name and metadata.
+2. **values.yaml** – Defines default values used in templates.
+3. **charts/** – Holds dependent charts (sub-charts).
+4. **templates/** – Contains the Kubernetes resource templates.
+
+---
+
+## Benefits of Templating
+
+-   Templates let you **define a common blueprint** for Kubernetes resources.
+-   Helm allows dynamic customization by replacing placeholders with actual values at deployment time.
+
+## Real-World Use Case
+
+-   Many deployments share common configuration.
+-   Helm makes it easy to:
+    -   Reuse the same template with different values.
+    -   Deploy the same application across multiple Kubernetes clusters with minimal changes.
