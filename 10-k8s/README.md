@@ -715,4 +715,4 @@ mychart/
 -   Many deployments share common configuration.
 -   Helm makes it easy to:
     -   Reuse the same template with different values.
-    -   Deploy the same application across multiple Kubernetes clusters with minimal changes.
+    -   Deploy the same application across multiple Kubernetes clusters with minimal changes. (e.g., dev, staging, production)
