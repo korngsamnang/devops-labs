@@ -716,3 +716,63 @@ mychart/
 -   Helm makes it easy to:
     -   Reuse the same template with different values.
     -   Deploy the same application across multiple Kubernetes clusters with minimal changes. (e.g., dev, staging, production)
+
+# CD - Jenkins & Kubernetes
+
+### Pull Docker Images into K8s cluster
+
+-   _PRIVATE REPO_: For K8s to fetch the Docker image from a private repository, you need to create a **Secret** that contains the credentials for the private registry.
+-   _PUBLIC REPO_: If you use a public repository, you don't need to create a Secret, as K8s can pull images from public repositories without authentication.
+
+### Step to pull image from Private Registry
+
+_1. Create Secret Component_
+
+-   Contains credentials from Docker registry
+
+```bash
+kubectl create secret docker-registry my-registry-secret \
+    --docker-server=https://index.docker.io/v1/ \
+    --docker-username=my-username \
+    --docker-password=my-password \
+```
+
+_2. Configure Deployment_
+
+-   Use Secret using imagePullSecrets field in the Deployment configuration file
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-deployment
+spec:
+  replicas: 3
+    selector:
+        matchLabels:
+        app: my-app
+    template:
+        metadata:
+            labels:
+                app: my-app
+        spec:
+            containers:
+                - name: my-container
+                  image: my-private-registry/my-image:latest
+                  ports:
+                      - containerPort: 80
+            imagePullSecrets:
+                - name: my-registry-secret
+```
+
+# Kubernetes Operators
+
+-   Statefull application need constant management and syncing after deployment. So statfull applications, like database need to be operated.
+-   Instead of a human operator, you have an automated scripted operator.
+-   An **Operator** is a method of packaging, deploying, and managing a Kubernetes application.
+
+## How Operators Work
+
+-   Operators use the **Kubernetes API** to watch for changes in the cluster.
+-   They can create, update, and delete resources based on the desired state defined in the Operator's code.
+-   Operators can also handle complex tasks like backups, scaling, and failover.
