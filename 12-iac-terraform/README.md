@@ -14,3 +14,93 @@
     -   share with others
     -   reuse across different environments
 -   Definition of configuration files is declarative, meaning you describe the desired state of your infrastructure, and Terraform figures out how to achieve that state.
+
+## Terraform Use Cases
+
+-   **Infrastructure Provisioning**:
+    1. Private Network space
+    2. EC2 server instances
+    3. Install Docker and other tools
+    4. Configure Security
+    5. ... and more
+-   **Manage existing infrastructure**:
+
+    -   Automate the continuous changes to your infrastructure
+
+-   **Replicating Infrastructure**:
+    -   Easily replicate infrastructure on different environments (e.g., dev, staging, production) or across different cloud providers.
+
+## Difference of Ansible and Terraform
+
+| Feature         | Terraform                                  | Ansible                                           | Both                         |
+| --------------- | ------------------------------------------ | ------------------------------------------------- | ---------------------------- |
+| Primary Purpose | Mainly an infrastructure provisioning tool | Mainly a configuration management tool            | Infrastructure as Code (IaC) |
+| Strengths       | More advanced in orchestration             | Better for configuring provisioned infrastructure |                              |
+| Best Used For   | Provisioning the infrastructure            | Configuring the provisioned infrastructure        |                              |
+
+## How Terraform Works
+
+An important part of Terraform (TF) is that knows:
+
+-   your desired statte (config file) and
+-   keeps track of your existing real infrastructure (in astate file)
+
+-   TF compares your desired with actual state to know which changes it needs to make your infrastructure match the desired state.
+-   Without state, you would always have to check the current state yourself and see how to update your desired state.
+
+This is the core workflow of Terraform:
+
+1. **Write**:
+    - Define your infrastructure resources in the configuration file
+    - E.g. creating 2 EC2 instances on AWS
+2. **Plan**:
+    - Based on the config file and state file,
+    - TF creates an execution plan - the change it will make to your infrastructure
+3. **Apply**:
+    - TF executed the changes to your infrastructure
+    - And updates the state file, so it up-to-date with the actual state of your infrastructure
+
+## Terraform Architecture
+
+![Terraform Architecture](https://miro.medium.com/v2/resize:fit:1100/format:webp/0*bJzMGdZBo0zKfbvQ)
+
+> source: [Medium](https://medium.com/@impradeep.techie/terraform-architecture-overview-structure-and-workflow-fdc60697941a)
+
+## Core Terraform Commands
+
+| Command              | Description                                                                                                  |
+| -------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `terraform init`     | Initializes a Terraform working directory, downloads provider plugins, and sets up the backend.              |
+| `terraform plan`     | Creates an execution plan, showing what actions Terraform will take to change                                |
+|                      | the infrastructure to match the desired state defined in the configuration files.                            |
+| `terraform apply`    | Applies the changes required to reach the desired state of the configuration.                                |
+| `terraform destroy`  | Destroys the infrastructure managed by Terraform, removing all resources defined in the configuration files. |
+| `terraform fmt`      | Formats Terraform configuration files to a canonical format and style.                                       |
+| `terraform validate` | Validates the configuration files for syntax errors and checks if they are valid.                            |
+| `terraform output`   | Displays the output values defined in the configuration files after applying changes.                        |
+
+_Example:_
+
+```bash
+# Configure the AWS Provider
+provider "aws" {
+  version = "3.0"
+  region  = "us-west-2"
+}
+
+# Create a VPC
+resource "aws_vpc" "my_vpc" {
+  cidr_block = "10.0.0/16"
+}
+```
+
+## Terraform Providers
+
+A provider is what Terraform uses to create and manage resources on a specific platform (like AWS, Azure, Kubernetes, or even GitHub).
+
+-   Provider = bridge between Terraform and a service
+-   It defines how to interact with the service's API
+-   You must configure a provider in your Terraform code to use it
+
+Example:
+If you're using Terraform to deploy infrastructure on AWS, the AWS provider is what connects Terraform to your AWS account.
