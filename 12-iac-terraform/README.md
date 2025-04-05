@@ -104,3 +104,43 @@ A provider is what Terraform uses to create and manage resources on a specific p
 
 Example:
 If you're using Terraform to deploy infrastructure on AWS, the AWS provider is what connects Terraform to your AWS account.
+
+## Resources and Data Sources
+
+-   **Resources**: The components of your infrastructure that you want to create or manage (e.g., EC2 instances, S3 buckets, etc.).
+
+Example:
+
+```bash
+# Configure the AWS Provider
+provider "aws" {
+    version = "3.0"
+    region = "us-west-2"
+}
+
+# Create an EC2 instance
+resource "aws_instance" "my_instance" {
+    ami           = "ami-0c55b159cbfafe1f0" # Example AMI ID
+    instance_type = "t2.micro"
+    tags = {
+        Name = "MyInstance"
+    }
+}
+```
+
+-   **Data Sources**: Allow you to fetch information from existing resources or services without managing them directly. They are read-only and do not create or modify resources.
+
+Example:
+
+```bash
+# Fetch an existing AMI ID
+data "aws_ami" "latest_amazon_linux" {
+  most_recent = true
+  owners      = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
+  }
+}
+```
