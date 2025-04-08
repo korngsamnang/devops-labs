@@ -144,3 +144,63 @@ data "aws_ami" "latest_amazon_linux" {
   }
 }
 ```
+
+## Terraform Variables
+
+-   Variables (Input variables) let you customize behavior without editing the terraform configuration files.
+
+**2 steps to use variables in Terraform:**
+
+1. Define variable and use it in your TF script
+2. Set the variable values when applying the script
+
+Example:
+
+```bash
+# Define a variable
+variable "subnet_cidr_blcok" {
+  description = "The CIDR block for the subnet"
+}
+
+resource "aws_vpc" "development-vpc"{
+  cidr_block = "10.0.0/16"
+  tags = {
+    Name = "Development VPC"
+  }
+}
+
+resource "aws_subnet" "development-subnet" {
+  vpc_id            = aws_vpc.development-vpc.id
+  cidr_block        = var.subnet_cidr_blcok # Use the variable here
+  availability_zone = "us-west-2a"
+  tags = {
+    Name = "Development Subnet"
+  }
+}
+
+```
+
+** 3 ways to set variable values for the defined variables:**
+
+1. **Command Line**: Use the `-var` flag when running `terraform apply` or `terraform plan`.
+
+    ```bash
+    terraform apply -var="subnet_cidr_block=10.0.1/24"
+    ```
+
+2. **Variable File**: Create a file named `terraform.tfvars` or any `.tfvars` file and define your variables there.
+
+    ```bash
+    subnet_cidr_block = "10.0.1/24"
+    ```
+
+3. **Environment Variables**: Set environment variables with the prefix `TF_VAR_` followed by the variable name.
+
+    ```bash
+    export TF_VAR_subnet_cidr_block="10.0.1/24"
+    ```
+
+**REAL use case with variables:**
+
+-   Same script parameterized for different environments (e.g., dev, staging, prod)
+-   Use different variable values for each environment to customize the infrastructure without changing the script.
