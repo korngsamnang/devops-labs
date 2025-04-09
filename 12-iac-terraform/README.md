@@ -204,3 +204,70 @@ resource "aws_subnet" "development-subnet" {
 
 -   Same script parameterized for different environments (e.g., dev, staging, prod)
 -   Use different variable values for each environment to customize the infrastructure without changing the script.
+
+## Git Repository for Terraform Projects
+
+-   Like your application code, Terraform script being infrastructure as code, should be managed by version control system Git and be hosted in a git repository.
+
+**Why?**
+
+-   safekeepping
+-   history of changes
+-   team collaboration
+-   review infrastructure changes using merge requests
+
+> Best practice: Have a separate git repository for app code and terraform code.
+
+## Executing Commands on Virtual Servers
+
+### User Data Attribute
+
+-   **Purpose**: Pass initial configuration during VM creation
+-   **Cloud Support**: Available in most cloud providers (AWS, Azure, GCP)
+-   **Use Case**:
+    -   First-boot configuration
+    -   Installing essential packages
+    -   Setting up basic services
+
+### Provisioners (Alternative Approach)
+
+-   **Types**:
+    -   `remote-exec`: Execute commands on the new resource
+    -   `file`: Copy files to the new resource
+    -   `local-exec`: Run commands on your local machine
+
+#### Provisioner Comparison
+
+| Type          | Execution Location | Key Parameters          | Common Use Case             |
+| ------------- | ------------------ | ----------------------- | --------------------------- |
+| `remote-exec` | Remote resource    | `inline`, `script`      | Post-creation configuration |
+| `file`        | Remote resource    | `source`, `destination` | Deploy configuration files  |
+| `local-exec`  | Local machine      | `command`               | Trigger local workflows     |
+
+---
+
+### When to Use Each Method
+
+1. **Prefer User Data When**:
+
+    - Cloud provider supports it
+    - Need simple initialization
+    - Want to maintain idempotency
+
+2. **Consider Provisioners When**:
+
+    - Need complex setup not possible via user data
+    - Must copy files to new instances
+    - Require integration with local systems
+
+3. **Better Alternatives**: - For complex configuration, use Ansible after provisioning - For file distribution, consider cloud-init or container images
+
+⚠️ **Provisioner Warnings**:
+
+-   Break Terraform's idempotency principle
+-   Create opaque dependencies in your infrastructure
+-   Make state management more difficult
+-   Should be used as last resort
+
+> **Recommended Workflow**:  
+> Terraform (provision) → Ansible (configure) → Monitoring
