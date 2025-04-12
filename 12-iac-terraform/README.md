@@ -271,3 +271,91 @@ resource "aws_subnet" "development-subnet" {
 
 > **Recommended Workflow**:  
 > Terraform (provision) → Ansible (configure) → Monitoring
+
+## Terraform Modules
+
+A module is a container for multiple resources that are used together. Modules can be used to create reusable components, making it easier to manage and organize your Terraform code.
+
+**Why Use Modules?**
+
+-   Oraganize and group configuration files
+-   Ecapsulate into distinct logical components
+-   Reuse across different projects or environments
+-   Without modules, your Terraform code can become complex and hard to manage.
+-   An example could be a module for EC2 instance with configured networking and security groups, which can be reused across different projects.
+-   There are many available on TF registry, which you can use in your projects.
+
+## Automate provisioning EKS cluster with TF
+
+Previously, we created EKS cluster manually using AWS console.
+
+-   Many component to create and configure
+    ❌ No version control (history)
+    ❌ No simple replication of infrastructure possible
+    ❌ No simple cleanup of resources
+    ❌ Team collaboration is difficult
+
+✅ With Terraform, we can automate the provisioning of EKS cluster and all its components.
+
+## Remote State in Terraform
+
+With remote state, Terraform writes the state data to a remote data store
+
+**Own state file**:
+❌ Each user/CI server much make sure they always have the latest state data before running `terraform apply`
+❌ So team collaboration very difficult
+
+**With shared remote state**:
+✅ Data backup
+✅ Can be shared with team members
+✅ Keep sensitive data off disk
+
+-   Terraform supports storing state in...
+    -   AWS S3
+    -   Azure Blob Storage
+    -   Google Cloud Storage
+    -   HashiCorp Consul
+    -   Terraform Cloud
+    -   ... and more
+
+**Steps to configure remote state in AWS S3 bucket:**
+
+1. Create an S3 bucket to store the state file.
+2. Configure bucket as remote state location
+
+**Example:**
+
+```base
+terraform {
+  backend "s3" {
+    bucket         = "my-terraform-state-bucket"
+    key            = "terraform.tfstate"
+    region         = "us-west-2"
+    dynamodb_table = "terraform-lock-table" # Optional for state locking
+  }
+}
+```
+
+-   This configuration tells Terraform to use the specified S3 bucket and key for storing the state file.
+
+## Best Practices for Terraform
+
+**Best practices around Terraform state:**
+
+-   Manipulate state only through TF commands
+-   Always set up a shared remote state instead of on your laptop or in Git
+-   Use state locking (locks state file until writing is done) to prevent concurrent modifications
+-   Back up your state file and enable versioning (allows for state recovery)
+-   Use 1 state per environment (e.g., dev, staging, prod) to avoid conflicts and confusion
+
+**Other:**
+
+-   Host TF scripts in Git repository
+-   CI for TF code (review TF code, run automated tests)
+-   Apply TF ONLY through CD pipeline (instead of manually)
+-   Use \_ (underscore) instead of - (dash) in all resource names, data source names, variable
+    names, outputs etc.
+-   Only use lowercase letters and numbers in resource names, data source names, variable names, outputs etc.
+-   Use a consistent structure and naming convention for your Terraform files and directories.
+-   Don’t hardcode values as much as possible - pass as variables or use data sources to get a
+    value
