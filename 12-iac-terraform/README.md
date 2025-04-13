@@ -290,10 +290,10 @@ A module is a container for multiple resources that are used together. Modules c
 Previously, we created EKS cluster manually using AWS console.
 
 -   Many component to create and configure
-    ❌ No version control (history)
-    ❌ No simple replication of infrastructure possible
-    ❌ No simple cleanup of resources
-    ❌ Team collaboration is difficult
+    -   ❌ No version control (history)
+    -   ❌ No simple replication of infrastructure possible
+    -   ❌ No simple cleanup of resources
+    -   ❌ Team collaboration is difficult
 
 ✅ With Terraform, we can automate the provisioning of EKS cluster and all its components.
 
@@ -302,8 +302,9 @@ Previously, we created EKS cluster manually using AWS console.
 With remote state, Terraform writes the state data to a remote data store
 
 **Own state file**:
-❌ Each user/CI server much make sure they always have the latest state data before running `terraform apply`
-❌ So team collaboration very difficult
+
+-   ❌ Each user/CI server much make sure they always have the latest state data before running `terraform apply`
+-   ❌ So team collaboration very difficult
 
 **With shared remote state**:
 ✅ Data backup
