@@ -307,9 +307,10 @@ With remote state, Terraform writes the state data to a remote data store
 -   ❌ So team collaboration very difficult
 
 **With shared remote state**:
-✅ Data backup
-✅ Can be shared with team members
-✅ Keep sensitive data off disk
+
+-   ✅ Data backup
+-   ✅ Can be shared with team members
+-   ✅ Keep sensitive data off disk
 
 -   Terraform supports storing state in...
     -   AWS S3
