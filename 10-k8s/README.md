@@ -211,3 +211,275 @@ kubeadm join <API_SERVER_IP>:<PORT> --token <TOKEN> --discovery-token-ca-cert-ha
 `
 
 **✅ Benefit**: You can scale workloads horizontally by adding nodes without downtime.
+
+# Deep Dive into Kubernetes
+
+## Minikube – Local Cluster Setup
+
+-   **Minikube** simulates a full Kubernetes cluster on a single machine.
+-   Used for **local testing and development**.
+-   Control plane and worker components run in one VM or container.
+-   Requires a container runtime (e.g., Docker) or VM manager (e.g., VirtualBox).
+-   Starts with:
+    ```bash
+    minikube start
+    ```
+
+## kubectl – Kubernetes CLI
+
+-   `kubectl` is the official CLI for interacting with Kubernetes.
+-   Uses a **kubeconfig** file (usually at `~/.kube/config`) to access clusters.
+
+**Basic Commands**
+
+```bash
+kubectl get pods       # Check pod status
+kubectl create -f file.yaml  # Create resources
+kubectl logs <pod>     # Debugging
+kubectl describe       # Detailed info
+```
+
+## Kubernetes YAML Configuration Files
+
+-   Declarative files used to define the desired state of resources.
+-   Written in YAML.
+-   Should be version-controlled.
+-   Commonly used for:
+    -   Deployments
+    -   Services
+    -   ConfigMaps
+    -   Secrets
+
+### Sections of a YAML File
+
+1. `apiVersion`
+    - Specifies the version of the Kubernetes API to use for the resource.
+    - Example: `apiVersion: apps/v1` for Deployments.
+2. `kind`
+    - Defines the type of resource (e.g., Pod, Service, Deployment).
+    - Example: `kind: Deployment`
+3. `metadata`
+    - Contains metadata about the resource, such as name, namespace, and labels.
+    - Example:
+        ```yaml
+        metadata:
+            name: my-deployment
+            labels:
+                app: my-app
+        ```
+4. `spec`
+    - Defines the desired state of the resource.
+    - Contains configuration details like replicas, container images, ports, etc.
+    - Example:
+        ```yaml
+        spec:
+            replicas: 3
+            selector:
+                matchLabels:
+                    app: my-app
+            template:
+                metadata:
+                    labels:
+                        app: my-app
+                spec:
+                    containers:
+                        - name: my-container
+                          image: my-image:latest
+                          ports:
+                              - containerPort: 80
+        ```
+
+**Example: Deployment**
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: nginx-deployment
+spec:
+    replicas: 2
+    selector:
+        matchLabels:
+            app: nginx
+    template:
+        metadata:
+            labels:
+                app: nginx
+        spec:
+            containers:
+                - name: nginx
+                  image: nginx:1.25
+                  ports:
+                      - containerPort: 80
+```
+
+**Labels & Selectors**
+
+-   Labels: Key-value pairs attached to objects.
+-   Selectors: Used to match labels and group resources.
+
+```yaml
+metadata:
+    labels:
+        app: frontend
+```
+
+```yaml
+selector:
+    matchLabels:
+        app: frontend
+```
+
+### Services and Ports
+
+-   A Service exposes Pods and provides a stable endpoint.
+
+**Example: ClusterIP Service**
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+    name: frontend-service
+spec:
+    selector:
+        app: frontend
+    ports:
+        - port: 80
+          targetPort: 8080
+    type: ClusterIP
+```
+
+### Ingress – HTTP Routing
+
+Ingress allows external access to services via HTTP(S).
+**Example: Basic Ingress**
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+    name: web-ingress
+spec:
+    rules:
+        - host: example.com
+          http:
+              paths:
+                  - path: /
+                    pathType: Prefix
+                    backend:
+                        service:
+                            name: frontend-service
+                            port:
+                                number: 80
+```
+
+> 🔗 **Note**: Ingress requires an Ingress Controller (e.g., NGINX, Traefik) to function.
+
+### ConfigMap & Secret
+
+-   **ConfigMap**: Stores non-sensitive configuration data.
+-   **Secret**: Stores sensitive data (e.g., passwords, API keys).
+
+**Example: ConfigMap**
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: app-config
+data:
+    DB_HOST: mongodb-service
+    DB_PORT: "27017"
+```
+
+**Example: Secret Example**
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+    name: db-credentials
+type: Opaque
+data:
+    username: YWRtaW4= # base64 encoded
+    password: c2VjcmV0 # base64 encoded
+```
+
+### Namespaces
+
+-   Logical separation within a single cluster.
+-   Useful for team isolation, environment isolation, or RBAC.
+
+**Create via CLI**
+
+```bash
+kubectl create namespace dev-team
+```
+
+**Create via YAML**
+
+```yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+    name: dev-team
+```
+
+### Persistent Storage
+
+-   Kubernetes supports Persistent Volumes for storing data beyond Pod lifecycles.
+
+**Example: PersistentVolumeClaim (PVC)**
+
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    name: app-pvc
+spec:
+    accessModes:
+        - ReadWriteOnce
+    resources:
+        requests:
+            storage: 1Gi
+```
+
+### StatefulSets
+
+-   Used for apps where each instance (Pod) has its own state and storage (e.g., databases).
+    **Example: StatefulSet with PVC**
+
+```yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+    name: mongo-db
+spec:
+    serviceName: mongo
+    replicas: 2
+    selector:
+        matchLabels:
+            app: mongo
+    template:
+        metadata:
+            labels:
+                app: mongo
+        spec:
+            containers:
+                - name: mongo
+                  image: mongo
+                  ports:
+                      - containerPort: 27017
+                  volumeMounts:
+                      - name: mongo-storage
+                        mountPath: /data/db
+    volumeClaimTemplates:
+        - metadata:
+              name: mongo-storage
+          spec:
+              accessModes: ["ReadWriteOnce"]
+              resources:
+                  requests:
+                      storage: 1Gi
+```
