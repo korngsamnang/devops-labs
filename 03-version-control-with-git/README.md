@@ -154,8 +154,7 @@ Branch workflow:
 
 ### Git Flow Branching Model
 
-> ![](https://github-production-user-asset-6210df.s3.amazonaws.com/99709883/465069704-3794d546-d7e1-4c35-93d0-d9bfae70adf9.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20250711%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250711T031547Z&X-Amz-Expires=300&X-Amz-Signature=0a715c8dc41c2a3e15fa5d5573c0f5930e9baecd4ab0d6dc5e99769a0f13d1f9&X-Amz-SignedHeaders=host)
+> ![Git flow](https://github.com/user-attachments/assets/dd016e01-2042-45cd-855b-a397acb151e8)
 
 > Source: [Git Flow](https://nvie.com/posts/a-successful-git-branching-model/)
 
-## Additional Resources
